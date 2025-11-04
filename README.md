@@ -5,6 +5,7 @@ This assignment focuses on building a real-time chat application using Socket.io
 ## Assignment Overview
 
 You will build a chat application with the following features:
+
 1. Real-time messaging using Socket.io
 2. User authentication and presence
 3. Multiple chat rooms or private messaging
@@ -69,9 +70,33 @@ Your work will be automatically submitted when you push to your GitHub Classroom
 5. Include screenshots or GIFs of your working application
 6. Optional: Deploy your application and add the URLs to your README.md
 
+## Application Screenshots
+
+### Login Page
+
+![Login Page](docs/screenshots/login.png)
+
+### Main / Chat Interface
+
+![Main Chat Interface](docs/screenshots/mainpage.png)
+
+### Private Messaging
+
+![Private Messaging](docs/screenshots/Private_message.png)
+
+### Chat Rooms (examples)
+
+Room 1:
+
+![Room 1 Chat](docs/screenshots/room1_chat.png)
+
+Room 2:
+
+![Room 2 Chat](docs/screenshots/room2_chat.png)
+
 ## Resources
 
 - [Socket.io Documentation](https://socket.io/docs/v4/)
 - [React Documentation](https://react.dev/)
 - [Express.js Documentation](https://expressjs.com/)
-- [Building a Chat Application with Socket.io](https://socket.io/get-started/chat) 
+- [Building a Chat Application with Socket.io](https://socket.io/get-started/chat)
