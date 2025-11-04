@@ -14,20 +14,17 @@ const routes = require('./routes'); // your routes folder
 const app = express();
 const server = http.createServer(app);
 
-// CORS setup: allow deployed client
-const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:5173';
+// Allowed frontend origins
+const ALLOWED_ORIGINS = [
+  'http://localhost:5173', // local dev
+  'https://realtimecommunicationserver.netlify.app' // deployed frontend
+];
 
-const io = new Server(server, {
-  cors: {
-    origin: CLIENT_URL,
-    methods: ['GET', 'POST'],
-    credentials: true,
-  },
-  maxHttpBufferSize: 1e7, // ~10MB for files
-});
-
-// Middleware
-app.use(cors({ origin: CLIENT_URL, credentials: true }));
+// Middleware for Express
+app.use(cors({
+  origin: ALLOWED_ORIGINS,
+  credentials: true
+}));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -44,17 +41,24 @@ function storeMessage(room, message) {
   if (messages[room].length > MAX) messages[room].shift();
 }
 
-// Socket.io events
+// Socket.IO setup
+const io = new Server(server, {
+  cors: {
+    origin: ALLOWED_ORIGINS,
+    methods: ['GET', 'POST'],
+    credentials: true
+  },
+  maxHttpBufferSize: 1e7 // ~10MB for files
+});
+
+// Socket.IO events
 io.on('connection', (socket) => {
   console.log(`Connected ${socket.id}`);
 
-  // Join default room
   socket.join('global');
   users[socket.id] = { id: socket.id, username: 'Anonymous', currentRoom: 'global' };
-  io.to('global').emit(
-    'user_list',
-    Object.values(users).map(u => ({ username: u.username, id: u.id }))
-  );
+
+  io.to('global').emit('user_list', Object.values(users).map(u => ({ username: u.username, id: u.id })));
 
   // USER JOIN
   socket.on('user_join', (username, cb) => {
@@ -89,9 +93,7 @@ io.on('connection', (socket) => {
     };
     storeMessage(room, message);
     io.to(room).emit('receive_message', message);
-    if (typeof ack === 'function') {
-      ack({ status: 'ok', id: message.id, timestamp: message.timestamp });
-    }
+    if (typeof ack === 'function') ack({ status: 'ok', id: message.id, timestamp: message.timestamp });
   });
 
   // PRIVATE MESSAGE
@@ -169,7 +171,7 @@ io.on('connection', (socket) => {
 });
 
 // API ROUTES
-app.use('/api', routes); // this points to routes/index.js
+app.use('/api', routes);
 
 // Paginate messages API
 app.get('/api/messages', (req, res) => {
