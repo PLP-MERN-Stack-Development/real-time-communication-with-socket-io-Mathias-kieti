@@ -4,44 +4,47 @@ export default function MessageList({ messages, markRead }) {
   const endRef = useRef();
 
   useEffect(() => {
-    // scroll to bottom on new messages
     endRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
   return (
-    <div className="message-list">
+    <div className="flex flex-col gap-2">
       {messages.map((m) => (
-        <div key={m.id || Math.random()} className={`message ${m.system ? 'system' : ''} ${m.isFile ? 'file' : ''}`}>
-          {m.system ? (
-            <div className="system-text">{m.message}</div>
-          ) : (
+        <div
+          key={m.id || Math.random()}
+          className={`p-2 rounded-md max-w-full break-words ${
+            m.system ? 'bg-gray-700 text-gray-300 text-sm italic' : 'bg-gray-800'
+          }`}
+        >
+          {!m.system && (
             <>
-              <div className="message-meta">
-                <span className="sender">{m.sender}</span>
-                <span className="timestamp">{new Date(m.timestamp).toLocaleTimeString()}</span>
+              <div className="flex justify-between text-sm text-gray-400 mb-1">
+                <span className="font-semibold text-teal-400">{m.sender}</span>
+                <span>{new Date(m.timestamp).toLocaleTimeString()}</span>
               </div>
-
               {m.isFile ? (
-                <div className="file-block">
-                  <div className="file-name">{m.file?.filename}</div>
-                  {/* Show image preview if image */}
-                  {m.file?.dataUrl?.startsWith('data:image') ? (
-                    <img src={m.file.dataUrl} alt={m.file.filename} style={{ maxWidth: '250px', borderRadius: 8 }} />
-                  ) : (
-                    <a href={m.file?.dataUrl} target="_blank" rel="noreferrer">Download</a>
-                  )}
-                </div>
+                m.file?.dataUrl?.startsWith('data:image') ? (
+                  <img src={m.file.dataUrl} alt={m.file.filename} className="max-w-xs rounded-md" />
+                ) : (
+                  <a
+                    href={m.file?.dataUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-teal-400 underline"
+                  >
+                    {m.file.filename || 'Download'}
+                  </a>
+                )
               ) : (
-                <div className="message-text">{m.message}</div>
+                <div>{m.message}</div>
               )}
-
-              <div className="message-actions">
+              <div className="flex gap-2 text-xs mt-1">
                 <button onClick={() => navigator.clipboard?.writeText(m.message || '')}>Copy</button>
                 <button onClick={() => markRead(m.id)}>Mark Read</button>
-                <span className="reactions">{Object.keys(m.reactions || {}).length ? '❤️' : ''}</span>
               </div>
             </>
           )}
+          {m.system && <div>{m.message}</div>}
         </div>
       ))}
       <div ref={endRef} />
