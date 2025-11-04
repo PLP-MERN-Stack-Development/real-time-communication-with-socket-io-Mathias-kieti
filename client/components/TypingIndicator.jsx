@@ -6,5 +6,5 @@ export default function TypingIndicator({ typingUsers }) {
     typingUsers.length === 1
       ? `${typingUsers[0]} is typing...`
       : `${typingUsers.join(', ')} are typing...`;
-  return <div className="text-gray-400 text-sm mt-1">{text}</div>;
+  return <div className="p-2 text-sm text-gray-400">{text}</div>;
 }

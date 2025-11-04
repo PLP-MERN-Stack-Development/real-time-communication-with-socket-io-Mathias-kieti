@@ -33,23 +33,22 @@ export default function MessageInput({ room, onSend, onTyping, onSendFile }) {
   };
 
   return (
-    <div className="flex flex-col sm:flex-row gap-2">
+    <div className="p-4 border-t border-gray-700 flex gap-2 items-end bg-gray-900">
       <textarea
-        className="flex-1 p-2 rounded-md bg-gray-800 text-white resize-none focus:outline-none focus:ring-2 focus:ring-teal-400"
+        className="flex-1 p-2 rounded bg-gray-800 text-white resize-none focus:outline-none"
         placeholder={`Message #${room}`}
         value={text}
         onChange={(e) => setText(e.target.value)}
         onKeyDown={handleKey}
+        rows={2}
       />
-      <div className="flex gap-2 items-center">
-        <input type="file" ref={fileRef} onChange={onFileChange} className="text-sm text-gray-400" />
-        <button
-          onClick={handleSend}
-          className="py-2 px-4 bg-teal-500 hover:bg-teal-600 rounded-md font-semibold text-gray-900"
-        >
-          Send
-        </button>
-      </div>
+      <input type="file" ref={fileRef} onChange={onFileChange} className="text-sm" />
+      <button
+        className="bg-teal-400 hover:bg-teal-500 text-gray-900 font-bold px-4 py-2 rounded"
+        onClick={handleSend}
+      >
+        Send
+      </button>
     </div>
   );
 }

@@ -8,43 +8,59 @@ export default function MessageList({ messages, markRead }) {
   }, [messages]);
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-3 bg-gray-800">
       {messages.map((m) => (
         <div
           key={m.id || Math.random()}
-          className={`p-2 rounded-md max-w-full break-words ${
-            m.system ? 'bg-gray-700 text-gray-300 text-sm italic' : 'bg-gray-800'
+          className={`p-2 rounded max-w-[70%] ${
+            m.system
+              ? 'bg-gray-600 text-gray-300 self-center'
+              : m.isFile
+              ? 'bg-gray-700'
+              : 'bg-gray-700 text-white'
           }`}
         >
-          {!m.system && (
+          {m.system ? (
+            <div>{m.message}</div>
+          ) : (
             <>
-              <div className="flex justify-between text-sm text-gray-400 mb-1">
-                <span className="font-semibold text-teal-400">{m.sender}</span>
+              <div className="flex justify-between text-xs text-gray-400 mb-1">
+                <span className="font-semibold">{m.sender}</span>
                 <span>{new Date(m.timestamp).toLocaleTimeString()}</span>
               </div>
+
               {m.isFile ? (
-                m.file?.dataUrl?.startsWith('data:image') ? (
-                  <img src={m.file.dataUrl} alt={m.file.filename} className="max-w-xs rounded-md" />
-                ) : (
-                  <a
-                    href={m.file?.dataUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-teal-400 underline"
-                  >
-                    {m.file.filename || 'Download'}
-                  </a>
-                )
+                <div>
+                  <div>{m.file?.filename}</div>
+                  {m.file?.dataUrl?.startsWith('data:image') ? (
+                    <img
+                      src={m.file.dataUrl}
+                      alt={m.file.filename}
+                      className="max-w-xs rounded mt-1"
+                    />
+                  ) : (
+                    <a href={m.file?.dataUrl} target="_blank" rel="noreferrer" className="text-teal-400">
+                      Download
+                    </a>
+                  )}
+                </div>
               ) : (
                 <div>{m.message}</div>
               )}
+
               <div className="flex gap-2 text-xs mt-1">
-                <button onClick={() => navigator.clipboard?.writeText(m.message || '')}>Copy</button>
-                <button onClick={() => markRead(m.id)}>Mark Read</button>
+                <button
+                  className="hover:underline"
+                  onClick={() => navigator.clipboard?.writeText(m.message || '')}
+                >
+                  Copy
+                </button>
+                <button className="hover:underline" onClick={() => markRead(m.id)}>
+                  Mark Read
+                </button>
               </div>
             </>
           )}
-          {m.system && <div>{m.message}</div>}
         </div>
       ))}
       <div ref={endRef} />
